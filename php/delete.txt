@@ -1,0 +1,8 @@
+$id = $_GET['id'];
+
+// Delete the row from the database
+$sql = "DELETE FROM users WHERE id='$id'";
+
+if (mysqli_query($conn, $sql)) {
+    echo "Row deleted successfully";
+}

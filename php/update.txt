@@ -1,0 +1,34 @@
+$id = $_GET['id'];
+
+// Retrieve data from the database
+$sql = "SELECT * FROM users WHERE id='$id'";
+$result = mysqli_query($conn, $sql);
+
+// Fetch the user data
+$row = mysqli_fetch_assoc($result);
+?>
+
+<form method="post">
+    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+    <label for="name">Name</label>
+    <input type="text" name="name" value="<?php echo $row['name']; ?>">
+    <label for="email">Email</label>
+    <input type="email" name="email" value="<?php echo $row['email']; ?>">
+    <label for="phone">Phone</label>
+    <input type="text" name="phone" value="<?php echo $row['phone']; ?>">
+    <input type="submit" value="Update">
+</form>
+if (isset($_POST['id'])) {
+    $id = $_POST['id'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+
+    // Update data in the database
+    $sql = "UPDATE users SET name='$name', email='$email', phone='$phone' WHERE id='$id'";
+    mysqli_query($conn, $sql);
+
+    // Redirect to the updated data page
+    header("Location: read.php");
+    exit;
+}

@@ -1,0 +1,28 @@
+controller:
+public function showproduct()
+    {
+        $data = Product::all();
+        return view('admin.showproduct', compact('data'));
+    }
+
+web.php:
+Route::get('/showproduct', [AdminController::class, 'showproduct']);
+
+blade:
+ @foreach ($data as $product)
+                                <tr>
+                                    <td>{{ $product->title }}</td>
+                                    <td>{{ $product->price }}</td>
+                                    <td>{{ $product->description }}</td>
+                                    <td>{{ $product->quantity }}</td>
+                                    <td><img src="/productimage/{{ $product->image }}"
+                                            style="object-fit: cover; border-radius:0;">
+                                    </td>
+                                    <td>
+                                        <a href="{{ url('/updateproduct', $product->id) }}"
+                                            class="btn-sm btn btn-success">Update</a>
+                                        <a href="{{ url('/deleteproduct', $product->id) }}"
+                                            class="btn-sm btn btn-danger">Delete</a>
+                                    </td>
+                                </tr>
+                            @endforeach

@@ -1,0 +1,72 @@
+web.php:
+Route::get('/updateproduct/{id}', [AdminController::class, 'updateproduct']);
+Route::post('/updatedproduct/{id}', [AdminController::class, 'updatedproduct']);
+
+controller:
+public function updateproduct($id)
+    {
+        $data = Product::find($id);
+        return view('admin.updateproduct', compact('data'));
+    }
+public function updatedproduct(Request $request, $id)
+    {
+        $data = Product::find($id);
+        $image = $request->file;
+        if ($image) {
+            $imagename = time() . '.' . $image->getClientOriginalExtension();
+            $request->file->move('productimage', $imagename);
+            $data->image = $imagename;
+        }
+        $data->title = $request->title;
+        $data->price = $request->price;
+        $data->description = $request->des;
+        $data->quantity = $request->quantity;
+        $data->save();
+        return redirect()->back()->with('Message', 'Product Updated Successfully');
+    }
+
+blade:
+@if (session()->has('Message'))
+                    <div class="col-8 mx-auto">
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            {{ session()->get('Message') }}
+                        </div>
+                    </div>
+                @endif
+                <form method="POST" class="text-dark" enctype="multipart/form-data"
+                    action="{{ url('updatedproduct', $data->id) }}">
+                    @csrf
+                    <div class="form-group col-8 mx-auto p-3">
+                        <label class="form-label text-white">Title</label>
+                        <input type="text" class="form-control" name="title" value="{{ $data->title }}"
+                            placeholder="Product Title" required>
+                    </div>
+                    <div class="form-group col-8 mx-auto p-3">
+                        <label class="form-label text-white">Price</label>
+                        <input type="number" class="form-control" name="price" value="{{ $data->price }}"
+                            placeholder="Product Price" required>
+                    </div>
+                    <div class="form-group col-8 mx-auto p-3">
+                        <label class="form-label text-white">Description</label>
+                        <input type="text" class="form-control" name="des" value="{{ $data->description }}"
+                            placeholder="Product Description" required>
+                    </div>
+                    <div class="form-group col-8 mx-auto p-3">
+                        <label class="form-label text-white">Quantity</label>
+                        <input type="text" class="form-control" name="quantity" value="{{ $data->quantity }}"
+                            placeholder="Product Quantity" required>
+                    </div>
+                    <div class="form-group col-8 mx-auto p-3">
+                        <label class="form-label text-white">Old Image</label><br>
+                        <img src="/productimage/{{ $data->image }}" width="100" height="100"
+                            style="object-fit: cover">
+                    </div>
+                    <div class="form-group col-8 mx-auto p-3">
+                        <label class="form-label text-white">New Image</label>
+                        <input type="file" class="form-control" name="file">
+                    </div>
+                    <div class="col-8 mx-auto p-3">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </form>
