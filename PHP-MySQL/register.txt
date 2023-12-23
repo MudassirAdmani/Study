@@ -1,10 +1,23 @@
+this is php that should be placed on top before document html.
+
+top php:
+
+<?php
+// database connection
+include("connect.php");
+?>
+
+this is the php that will do the main process.
+
+main php:
+
 <?php
                 if (isset($_POST['regBtn'])) {
                     $name = $_POST['regName'];
                     $email = $_POST['regEmail'];
                     $pass = $_POST['regPass'];
-                    $hashed_pass = password_hash($pass, PASSWORD_DEFAULT); // Hash the password
-
+                    // hashed the password
+                    $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
                     // Check if the email already exists
                     $check_query = "SELECT * FROM register WHERE regEmail = ?";
                     $check_stmt = $con->prepare($check_query);
@@ -12,7 +25,7 @@
                     $check_stmt->execute();
                     $check_result = $check_stmt->get_result();
                     if ($check_result->num_rows === 0) {
-                        // Email does not exist, proceed with the insertion
+                        // Email does not exist
                         $insert_query = "INSERT INTO register (regName, regEmail, regPass) VALUES (?, ?, ?)";
                         $insert_stmt = $con->prepare($insert_query);
                         $insert_stmt->bind_param("sss", $name, $email, $hashed_pass);
@@ -22,7 +35,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="window.location.href=\'login.php\'"></button>
                         </div>';
                     } else {
-                        // Email already exists, handle the error (e.g., display a message to the user)
+                        // Email already exists
                         echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
                         An account with this email already exists
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -30,3 +43,20 @@
                     }
                 }
                 ?>
+
+this is the html for the form.
+
+html:
+
+<form enctype="multipart/form-data" method="post">
+                    <label class="form-label">Name:</label>
+                    <input type="text" name="regName" class="form-control">
+                    <br>
+                    <label class="form-label">Email:</label>
+                    <input type="email" name="regEmail" class="form-control">
+                    <br>
+                    <label class="form-label">Password:</label>
+                    <input type="password" name="regPass" class="form-control">
+                    <br>
+                    <button type="submit" name="regBtn" class="btn btn-primary">Register</button>
+                </form>
