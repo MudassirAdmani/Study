@@ -1,9 +1,32 @@
-$name = $_POST['name'];
-   $email = $_POST['email'];
-   $password = $_POST['password'];
+<?php
+                if (isset($_POST['regBtn'])) {
+                    $name = $_POST['regName'];
+                    $email = $_POST['regEmail'];
+                    $pass = $_POST['regPass'];
+                    $hashed_pass = password_hash($pass, PASSWORD_DEFAULT); // Hash the password
 
-   $sql = "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$password')";
-
-   if (mysqli_query($conn, $sql)) {
-      echo "New record created successfully";
-   }
+                    // Check if the email already exists
+                    $check_query = "SELECT * FROM register WHERE regEmail = ?";
+                    $check_stmt = $con->prepare($check_query);
+                    $check_stmt->bind_param("s", $email);
+                    $check_stmt->execute();
+                    $check_result = $check_stmt->get_result();
+                    if ($check_result->num_rows === 0) {
+                        // Email does not exist, proceed with the insertion
+                        $insert_query = "INSERT INTO register (regName, regEmail, regPass) VALUES (?, ?, ?)";
+                        $insert_stmt = $con->prepare($insert_query);
+                        $insert_stmt->bind_param("sss", $name, $email, $hashed_pass);
+                        $insert_stmt->execute();
+                        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Account Created Successfully
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="window.location.href=\'login.php\'"></button>
+                        </div>';
+                    } else {
+                        // Email already exists, handle the error (e.g., display a message to the user)
+                        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        An account with this email already exists
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>';
+                    }
+                }
+                ?>
