@@ -1,9 +1,23 @@
-$email = $_POST['email'];
-   $password = $_POST['password'];
-
-   $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
-   $result = mysqli_query($conn, $sql);
-
-   if (mysqli_num_rows($result) == 1) {
-      echo "Login successful";
-   }
+<?php
+                if (isset($_POST['logBtn'])) {
+                    $email = $_POST['logEmail'];
+                    $pass = $_POST['logPass'];
+                    $sql = "SELECT * FROM register WHERE regEmail = ?";
+                    $stmt = $con->prepare($sql);
+                    $stmt->bind_param("s", $email);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows === 1) {
+                        $user = $result->fetch_assoc();
+                        if (password_verify($pass, $user['regPass'])) {
+                            if ($user['role'] == 0) {
+                                header('location: home.php');
+                            } else if ($user['role'] == 1) {
+                                header('location: dashboard.php');
+                            }
+                        } else {
+                            echo "Invalid email or password";
+                        }
+                    }
+                }
+                ?>
