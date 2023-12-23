@@ -1,0 +1,6 @@
+<?php
+// start session for storing the logged in user data
+session_start();
+// create database connection
+$con = mysqli_connect("localhost", "root", "", "crud_practice");
+?>
