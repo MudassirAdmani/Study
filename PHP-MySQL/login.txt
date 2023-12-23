@@ -1,3 +1,16 @@
+this is php that should be placed on top before document html.
+
+top php:
+
+<?php
+// database connection
+include("connect.php");
+?>
+
+this is the php that will do the main process.
+
+main php:
+
 <?php
                 if (isset($_POST['logBtn'])) {
                     $email = $_POST['logEmail'];
@@ -9,9 +22,15 @@
                     $result = $stmt->get_result();
                     if ($result->num_rows === 1) {
                         $user = $result->fetch_assoc();
+                        // verify the password
                         if (password_verify($pass, $user['regPass'])) {
+                            // Store the user's info in session variables
+                            $_SESSION['role'] = $user['role'];
+                            $_SESSION['id'] = $user['id'];
+                            $_SESSION['name'] = $user['regName'];
+                            // multi auth
                             if ($user['role'] == 0) {
-                                header('location: home.php');
+                                header('location: edit.php');
                             } else if ($user['role'] == 1) {
                                 header('location: dashboard.php');
                             }
@@ -21,3 +40,17 @@
                     }
                 }
                 ?>
+
+this is the html for the form:
+
+html:
+
+<form enctype="multipart/form-data" method="post">
+                    <label class="form-label">Email:</label>
+                    <input type="email" name="logEmail" class="form-control">
+                    <br>
+                    <label class="form-label">Password:</label>
+                    <input type="password" name="logPass" class="form-control">
+                    <br>
+                    <button type="submit" name="logBtn" class="btn btn-primary">Login</button>
+                </form>
