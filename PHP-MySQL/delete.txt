@@ -1,8 +1,14 @@
-$id = $_GET['id'];
-
-// Delete the row from the database
-$sql = "DELETE FROM users WHERE id='$id'";
-
-if (mysqli_query($conn, $sql)) {
-    echo "Row deleted successfully";
+<?php
+include 'connect.php';
+// get the id
+if (isset($_GET['id'])) {
+    $user_id = $_GET['id'];
+    // Delete the user from the database
+    $sql = "DELETE FROM register WHERE id = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    // Redirect the user to the home page
+    header('Location: dashboard.php');
 }
+?>
