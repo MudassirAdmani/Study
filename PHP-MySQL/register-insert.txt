@@ -1,78 +1,90 @@
-this is php that should be placed on top before document html.
+this is the php code.
 
-top php:
+php:
 
 <?php
 // database connection
-include("connect.php");
+include('connect.php');
+// check if form submitted
+if (isset($_POST['regBtn'])) {
+    // store input in variables
+    $regName = $_POST['regName'];
+    $regEmail = $_POST['regEmail'];
+    $regPass = $_POST['regPass'];
+    // hash the password
+    $hashedPass = password_hash($regPass, PASSWORD_DEFAULT);
+    // image work count images
+    $totalFiles = count($_FILES['regImg']['name']);
+    // create array
+    $filesArray = array();
+    // do this if you want to limit images
+    // if ($totalFiles <= 4) {
+    for ($i = 0; $i < $totalFiles; $i++) {
+        $imgName = $_FILES['regImg']['name'][$i];
+        $tmpName = $_FILES['regImg']['tmp_name'][$i];
+        // get img extension
+        $imgExtension = explode('.', $imgName);
+        $imgExtension = strtolower(end($imgExtension));
+        // generate unique names
+        $newImgName = uniqid() . '.' . $imgExtension;
+        // move uploaded images to folder
+        move_uploaded_file($tmpName, 'images/regImages/' . $newImgName);
+        // store in array
+        $filesArray[] = $newImgName;
+    }
+    // } else {
+    //     // If the total number of files is greater than 4, display an error message
+    //     echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    //     You can upload a maximum of 4 images
+    //     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="window.location.href=\'register.php\'"></button>
+    //     </div>';
+    //     exit;
+    // }
+    // convert to json
+    $filesArray = json_encode($filesArray);
+    // check if email already exists
+    $checkSql = "select * from register where regEmail = ?";
+    $checkStmt = $con->prepare($checkSql);
+    $checkStmt->bind_param("s", $regEmail);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    if ($checkResult->num_rows == 0) {
+        // email does not exist
+        $insertSql = "insert into register (regName, regEmail, regPass, regImage) values (?, ?, ?, ?)";
+        $insertStmt = $con->prepare($insertSql);
+        $insertStmt->bind_param("ssss", $regName, $regEmail, $hashedPass, $filesArray);
+        $insertStmt->execute();
+        // show alert
+        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+        Account Created Successfully
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="window.location.href=\'index.php\'"></button>
+        </div>';
+    } else {
+        // email already exists show alert
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+        An account with this email already exists
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+    }
+}
 ?>
-
-this is the php that will do the main process.
-
-main php:
-
-<?php
-                if (isset($_POST['regBtn'])) {
-                    $name = $_POST['regName'];
-                    $email = $_POST['regEmail'];
-                    $pass = $_POST['regPass'];
-                    // hashed the password
-                    $hashed_pass = password_hash($pass, PASSWORD_DEFAULT);
-                    // image work
-                    $totalFiles = count($_FILES['regImage']['name']);
-                    $filesArray = array();
-                    for($i = 0; $i < $totalFiles; $i++){
-                        $imageName = $_FILES['regImage']['name'][$i];
-                        $tmpName = $_FILES['regImage']['tmp_name'][$i];
-                        $imageExtension = explode('.', $imageName);
-                        $imageExtension = strtolower(end($imageExtension));
-                        $newImgName = uniqid() . '.' . $imageExtension;
-                        move_uploaded_file($tmpName, 'regImages/' . $newImgName);
-                        $filesArray[] = $newImgName;
-                    }
-                    $filesArray = json_encode($filesArray);
-                    // Check if the email already exists
-                    $check_query = "SELECT * FROM register WHERE regEmail = ?";
-                    $check_stmt = $con->prepare($check_query);
-                    $check_stmt->bind_param("s", $email);
-                    $check_stmt->execute();
-                    $check_result = $check_stmt->get_result();
-                    if ($check_result->num_rows === 0) {
-                        // Email does not exist
-                        $insert_query = "INSERT INTO register (regName, regEmail, regPass, regImage) VALUES (?, ?, ?, ?)";
-                        $insert_stmt = $con->prepare($insert_query);
-                        $insert_stmt->bind_param("ssss", $name, $email, $hashed_pass, $filesArray);
-                        $insert_stmt->execute();
-                        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Account Created Successfully
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="window.location.href=\'login.php\'"></button>
-                        </div>';
-                    } else {
-                        // Email already exists
-                        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        An account with this email already exists
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>';
-                    }
-                }
-                ?>
 
 this is the html for the form.
 
 html:
 
-<form enctype="multipart/form-data" method="post">
-                    <label class="form-label">Name:</label>
-                    <input type="text" name="regName" class="form-control">
-                    <br>
-                    <label class="form-label">Email:</label>
-                    <input type="email" name="regEmail" class="form-control">
-                    <br>
-                    <label class="form-label">Image:</label>
-                    <input type="file" name="regImage[]" accept=".jpg, .jpeg, .png" class="form-control">
-                    <br>
-                    <label class="form-label">Password:</label>
-                    <input type="password" name="regPass" class="form-control">
-                    <br>
-                    <button type="submit" name="regBtn" class="btn btn-primary">Register</button>
-                </form>
+<form method="post" enctype="multipart/form-data">
+                <label class="form-label text-white">Name:</label>
+                <input type="text" class="form-control" name="regName">
+                <br>
+                <label class="form-label text-white">Email:</label>
+                <input type="email" class="form-control" name="regEmail">
+                <br>
+                <label class="form-label text-white">Password:</label>
+                <input type="password" class="form-control" name="regPass">
+                <br>
+                <label class="form-label text-white">Image:</label>
+                <input type="file" class="form-control" accept=".jpg, .jpeg, .png" name="regImg[]" multiple>
+                <br>
+                <button type="submit" name="regBtn" class="btn btn-primary">Register</button>
+            </form>
