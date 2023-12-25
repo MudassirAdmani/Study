@@ -1,13 +1,111 @@
-this is php that should be placed on top before document html.
-
-top php:
-
 <?php
-// database connection
-include("connect.php");
+include 'connect.php';
+
+if (isset($_GET['id']) || isset($_SESSION['id'])) {
+    $user_id = isset($_GET['id']) ? $_GET['id'] : $_SESSION['id'];
+
+    // Get the user from the database to edit
+    $sql = "SELECT * FROM register WHERE regId = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 1) {
+        $row = $result->fetch_assoc();
 ?>
+        <!DOCTYPE html>
+        <html lang="en">
 
-this is the php that will do the main process.
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Document</title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        </head>
 
-main php:
+        <body>
+            <div class="container">
+                <div class="row">
+                    <div class="col-3"></div>
+                    <div class="col-6 mt-2 bg-dark p-5 shadow rounded-5">
+                        <h1 class="text-center text-white">Edit</h1>
+                        <form method="post" enctype="multipart/form-data">
+                            <label class="form-label text-white">Name:</label>
+                            <input type="text" value="<?= $row['regName'] ?>" class="form-control" name="regName">
+                            <br>
+                            <label class="form-label text-white">Email:</label>
+                            <input type="email" value="<?= $row['regEmail'] ?>" class="form-control" name="regEmail">
+                            <br>
+                            <label class="form-label text-white">Password:</label>
+                            <input type="password" placeholder="Enter New Password" class="form-control" name="regPass">
+                            <br>
+                            <label class="form-label text-white">Old Image:</label>
+                            <?php foreach (json_decode($row['regImage']) as $image) {
+                                echo "<img src='regImages/" . $image . "' style='width: 40px; height: 40px; object-fit: cover;'>";
+                            } ?>
+                            <br>
+                            <label class="form-label text-white">New Image:</label>
+                            <input type="file" class="form-control" accept=".jpg, .jpeg, .png" name="regImage[]" multiple>
+                            <br>
+                            <button type="submit" name="regBtn" class="btn btn-primary form-control">Update</button>
+                        </form>
+                        <br>
+                    </div>
+                    <div class="col-3"></div>
+                </div>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js" integrity="sha512-X/YkDZyjTf4wyc2Vy16YGCPHwAY8rZJY+POgokZjQB2mhIRFJCckEGc6YyX9eNsPfn0PzThEuNs+uaomE5CO6A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        </body>
 
+        </html>
+<?php
+    } else {
+        echo "User not found";
+    }
+}
+if (isset($_POST['regBtn'])) {
+    $name = $_POST['regName'];
+    $email = $_POST['regEmail'];
+    // Check if the logged in user/admin is changing their password
+    if ($_SESSION['id'] != $row['regId']) {
+        // User is not allowed to update the password and image
+        $sql = "UPDATE register SET regName = ?, regEmail = ? WHERE regId = ?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param("ssi", $name, $email, $user_id);
+        $stmt->execute();
+    } else {
+        // User is allowed to update the password and image
+        $password = $_POST['regPass'];
+        $hashed_pass = password_hash($password, PASSWORD_DEFAULT);
+        // Check if the user has uploaded a new image
+        if ($_FILES['regImage']['size'][0] > 0) {
+            $totalFiles = count($_FILES['regImage']['name']);
+            $filesArray = array();
+            for ($i = 0; $i < $totalFiles; $i++) {
+                $imageName = $_FILES['regImage']['name'][$i];
+                $tmpName = $_FILES['regImage']['tmp_name'][$i];
+                $imageExtension = explode('.', $imageName);
+                $imageExtension = strtolower(end($imageExtension));
+                $newImgName = uniqid() . '.' . $imageExtension;
+                move_uploaded_file($tmpName, 'regImages/' . $newImgName);
+                $filesArray[] = $newImgName;
+            }
+            $filesArray = json_encode($filesArray);
+        } else {
+            // If the user has not uploaded a new image, use the existing image
+            $filesArray = $row['regImage'];
+        }
+        $sql = "UPDATE register SET regName = ?, regEmail = ?, regPass = ?, regImage = ? WHERE regId = ?";
+        $stmt = $con->prepare($sql);
+        $stmt->bind_param("ssssi", $name, $email, $hashed_pass, $filesArray, $user_id);
+        $stmt->execute();
+    }
+    // Redirect to the appropriate page after the update
+    if ($_SESSION['role'] == 1) {
+        header('location: dashboard.php');
+    } else {
+        header('location: index.php');
+    }
+}
+?>
