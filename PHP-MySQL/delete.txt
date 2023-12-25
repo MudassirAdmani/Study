@@ -1,14 +1,28 @@
 <?php
-include 'connect.php';
-// get the id
+include('./connect.php');
+// get id for admin deletion
 if (isset($_GET['id'])) {
-    $user_id = $_GET['id'];
-    // Delete the user from the database
-    $sql = "DELETE FROM register WHERE id = ?";
+    // store in variable
+    $regId = $_GET['id'];
+    // delete from database
+    $sql = "delete from register where regId = ?";
     $stmt = $con->prepare($sql);
-    $stmt->bind_param("i", $user_id);
+    $stmt->bind_param("i", $regId);
     $stmt->execute();
-    // Redirect the user to the home page
-    header('Location: dashboard.php');
+    // return to dashboard
+    header('location: dashboard.php');
 }
-?>
+// session id for self deletion
+else if (isset($_SESSION['id'])) {
+    // store in variable
+    $regId = $_SESSION['id'];
+    // delete from database
+    $sql = "delete from register where regId = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("i", $regId);
+    $stmt->execute();
+    // stop the session
+    session_destroy();
+    // return to index
+    header('location: index.php');
+}
