@@ -1,56 +1,51 @@
 this is php that should be placed on top before document html.
 
-top php:
-
 <?php
 // database connection
-include("connect.php");
+include('./connect.php');
+// form submition
+if (isset($_POST['logBtn'])) {
+    // store value in variables
+    $logEmail = $_POST['logEmail'];
+    $logPass = $_POST['logPass'];
+    // get data from database
+    $sql = "select * from register where regEmail = ?";
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param("s", $logEmail);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows == 1) {
+        $user = $result->fetch_assoc();
+        // verify password
+        if (password_verify($logPass, $user['regPass'])) {
+            // store user's info in session
+            $_SESSION['role'] = $user['regRole'];
+            $_SESSION['id'] = $user['regId'];
+            $_SESSION['name'] = $user['regName'];
+            // do this if you want to do multi auth
+            // if ($user['role'] == 1) {
+            //     header('location: dashboard.php');
+            // } else {
+            //     header('location: home.php');
+            // }
+            header('location: index.php');
+        } else {
+            echo "Invalid Email or Password";
+        }
+    }
+}
 ?>
-
-this is the php that will do the main process.
-
-main php:
-
-<?php
-                if (isset($_POST['logBtn'])) {
-                    $email = $_POST['logEmail'];
-                    $pass = $_POST['logPass'];
-                    $sql = "SELECT * FROM register WHERE regEmail = ?";
-                    $stmt = $con->prepare($sql);
-                    $stmt->bind_param("s", $email);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    if ($result->num_rows === 1) {
-                        $user = $result->fetch_assoc();
-                        // verify the password
-                        if (password_verify($pass, $user['regPass'])) {
-                            // Store the user's info in session variables
-                            $_SESSION['role'] = $user['role'];
-                            $_SESSION['id'] = $user['id'];
-                            $_SESSION['name'] = $user['regName'];
-                            // multi auth
-                            if ($user['role'] == 0) {
-                                header('location: edit.php');
-                            } else if ($user['role'] == 1) {
-                                header('location: dashboard.php');
-                            }
-                        } else {
-                            echo "Invalid email or password";
-                        }
-                    }
-                }
-                ?>
 
 this is the html for the form:
 
 html:
 
-<form enctype="multipart/form-data" method="post">
-                    <label class="form-label">Email:</label>
-                    <input type="email" name="logEmail" class="form-control">
+<form method="post" enctype="multipart/form-data">
+                    <label class="form-label text-white">Email:</label>
+                    <input type="email" class="form-control" name="logEmail">
                     <br>
-                    <label class="form-label">Password:</label>
-                    <input type="password" name="logPass" class="form-control">
+                    <label class="form-label text-white">Password:</label>
+                    <input type="password" class="form-control" name="logPass">
                     <br>
-                    <button type="submit" name="logBtn" class="btn btn-primary">Login</button>
+                    <button type="submit" name="logBtn" class="btn btn-primary form-control">Login</button>
                 </form>
