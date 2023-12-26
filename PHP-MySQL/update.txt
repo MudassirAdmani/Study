@@ -1,13 +1,9 @@
-this is the php that will write on top.
-
-php:
-
-<?php
-// database connection
+// Database connection
 include('./connect.php');
-// get id using get or session
+
+// Get id using get or session
 if (isset($_GET['id']) || isset($_SESSION['id'])) {
-    // store id in variable
+    // Store id in variable
     $regId = isset($_GET['id']) ? $_GET['id'] : $_SESSION['id'];
     $sql = "select * from register where regId = ?";
     $stmt = $con->prepare($sql);
@@ -18,52 +14,45 @@ if (isset($_GET['id']) || isset($_SESSION['id'])) {
         $row = $result->fetch_assoc();
 ?>
 
-this is the html for the form.
-
-html:
-
+<!-- HTML for the form -->
 <form method="post" enctype="multipart/form-data">
-                            <label class="form-label text-white">Name:</label>
-                            <input type="text" class="form-control" value="<?= $row['regName'] ?>" name="regName">
-                            <br>
-                            <label class="form-label text-white">Email:</label>
-                            <input type="email" class="form-control" value="<?= $row['regEmail'] ?>" name="regEmail">
-                            <br>
-                            <?php
-                            if ($_SESSION['role'] == $row['regId']) {
-                                echo '<label class="form-label text-white">Password:</label>';
-                                echo '<input type="password" class="form-control" placeholder="Enter New Password" name="regPass">';
-                                echo '<br>';
-                            }
-                            ?>
-                            <label class="form-label text-white">Old Image:</label>
-                            <?php foreach (json_decode($row['regImage']) as $image) {
-                                echo "<img src='regImages/" . $image . "' style='width: 80px; height: 80px; object-fit: cover;'>";
-                            } ?>
-                            <br>
-                            <?php
-                            if ($_SESSION['role'] == $row['regId']) {
-                                echo '<label class="form-label text-white">New Image:</label>';
-                                echo '<input type="file" class="form-control" accept=".jpg, .jpeg, .png" name="regImg[]" multiple>';
-                            }
-                            ?>
-                            <br>
-                            <button type="submit" name="regBtn" class="btn btn-primary form-control">Register</button>
-                        </form>
-
-this is the php that will write on bottom:
-
-php:
-
-<?php
-    } else {
-        echo "User Not Found";
+    <label class="form-label text-white">Name:</label>
+    <input type="text" class="form-control" value="<?= $row['regName'] ?>" name="regName">
+    <br>
+    <label class="form-label text-white">Email:</label>
+    <input type="email" class="form-control" value="<?= $row['regEmail'] ?>" name="regEmail">
+    <br>
+    <?php
+    if ($_SESSION['role'] == $row['regId']) {
+        echo '<label class="form-label text-white">Password:</label>';
+        echo '<input type="password" class="form-control" placeholder="Enter New Password" name="regPass">';
+        echo '<br>';
     }
+    ?>
+    <label class="form-label text-white">Old Image:</label>
+    <?php foreach (json_decode($row['regImage']) as $image) {
+        echo "<img src='regImages/" . $image . "' style='width: 80px; height: 80px; object-fit: cover;'>";
+    } ?>
+    <br>
+    <?
+    if ($_SESSION['role'] == $row['regId']) {
+        echo '<label class="form-label text-white">New Image:</label>';
+        echo '<input type="file" class="form-control" accept=".jpg, .jpeg, .png" name="regImg[]" multiple>';
+    }
+    ?>
+    <br>
+    <button type="submit" name="regBtn" class="btn btn-primary form-control">Register</button>
+</form>
+
+<!-- PHP that will write at the bottom -->
+<?php
+} else {
+    echo "User Not Found";
 }
 if (isset($_POST['regBtn'])) {
     $regName = $_POST['regName'];
     $regEmail = $_POST['regEmail'];
-    // check if logged in user/admin is changing their password or image
+    // Check if logged in user/admin is changing their password or image
     if ($_SESSION['id'] != $row['regId']) {
         // User is not allowed to update password or image
         $sql = "update register set regName = ?, regEmail = ? where regId = ?";
@@ -73,9 +62,9 @@ if (isset($_POST['regBtn'])) {
     } else {
         // user is allowed to update the password and image
         $regPass = $_POST['regPass'];
-        // hash the password
+        // Hash the password
         $hashedPass = password_hash($regPass, PASSWORD_DEFAULT);
-        // check if user has uploaded a new image
+        // Check if user has uploaded a new image
         if ($_FILES['regImg']['size'][0] > 0) {
             $totalFiles = count($_FILES['regImg']['name']);
             $filesArray = array();
@@ -90,7 +79,7 @@ if (isset($_POST['regBtn'])) {
             }
             $filesArray = json_encode($filesArray);
         } else {
-            // if the user has not uploaded an image, use existing image
+            // If the user has not uploaded an image, use existing image
             $filesArray = $row['regImage'];
         }
         $sql = "update register set regName = ?, regEmail = ?, regPass = ?, regImage = ? where regId = ?";
@@ -98,7 +87,7 @@ if (isset($_POST['regBtn'])) {
         $stmt->bind_param("ssssi", $regName, $regEmail, $hashedPass, $filesArray, $regId);
         $stmt->execute();
     }
-    // redirect to appropiate page
+    // Redirect to appropriate page
     if ($_SESSION['role'] == 1) {
         header('location: dashboard.php');
     } else {
