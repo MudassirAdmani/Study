@@ -1,33 +1,31 @@
-this is php that should be placed on top before document html.
-
 <?php
-// database connection
+// Database connection
 include('./connect.php');
-// form submition
+
+// Form submission
 if (isset($_POST['logBtn'])) {
-    // store value in variables
+    // Store values in variables
     $logEmail = $_POST['logEmail'];
     $logPass = $_POST['logPass'];
-    // get data from database
+
+    // Get data from database
     $sql = "select * from register where regEmail = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("s", $logEmail);
     $stmt->execute();
     $result = $stmt->get_result();
+
     if ($result->num_rows == 1) {
         $user = $result->fetch_assoc();
-        // verify password
+
+        // Verify password
         if (password_verify($logPass, $user['regPass'])) {
-            // store user's info in session
+            // Store user's info in session
             $_SESSION['role'] = $user['regRole'];
             $_SESSION['id'] = $user['regId'];
             $_SESSION['name'] = $user['regName'];
-            // do this if you want to do multi auth
-            // if ($user['role'] == 1) {
-            //     header('location: dashboard.php');
-            // } else {
-            //     header('location: home.php');
-            // }
+
+            // Redirect to appropriate page
             header('location: index.php');
         } else {
             echo "Invalid Email or Password";
@@ -36,16 +34,13 @@ if (isset($_POST['logBtn'])) {
 }
 ?>
 
-this is the html for the form:
-
-html:
-
+<!-- HTML for the form -->
 <form method="post" enctype="multipart/form-data">
-                    <label class="form-label text-white">Email:</label>
-                    <input type="email" class="form-control" name="logEmail">
-                    <br>
-                    <label class="form-label text-white">Password:</label>
-                    <input type="password" class="form-control" name="logPass">
-                    <br>
-                    <button type="submit" name="logBtn" class="btn btn-primary form-control">Login</button>
-                </form>
+    <label class="form-label text-white">Email:</label>
+    <input type="email" class="form-control" name="logEmail">
+    <br>
+    <label class="form-label text-white">Password:</label>
+    <input type="password" class="form-control" name="logPass">
+    <br>
+    <button type="submit" name="logBtn" class="btn btn-primary form-control">Login</button>
+</form>
