@@ -1,63 +1,50 @@
-this is php that should be placed on top before document html.
-
-top php:
-
 <?php
-// database connection
+// Database connection
 include("connect.php");
 ?>
 
-this is the php that will do the main process.
-
-main php:
-
 <?php
-                    $sql = "SELECT * FROM register";
-                    $result = $con->query($sql);
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . $row['regName'] . "</td>";
-                            echo "<td>" . $row['regEmail'] . "</td>";
-                            echo "<td>........</td>";
-                            echo "<td>";
-                            if ($row['regRole'] == 1) {
-                                echo "Admin";
-                            } else {
-                                echo "User";
-                            }
-                            echo "</td>";
-                            echo "<td>";
-                            foreach (json_decode($row['regImage']) as $image) {
-                                echo "<img src='regImages/" . $image . "' style='width: 40px; height: 40px; object-fit: cover;'>";
-                            }
-                            echo "</td>";
-                            echo "<td>";
-                            echo "<a class='btn btn-success btn-sm me-1' href='edit.php?id=" . $row['regId'] . "'>Edit</a>";
-                            if ($row['regRole'] == 0) {
-                                echo "<a class='btn btn-danger btn-sm ms-1' href='delete.php?id=" . $row['regId'] . "'>Delete</a>";
-                            }
-                            echo "</td>";
-                            echo "</tr>";
-                        }
-                    }
-                    ?>
-
-this is the html for showing the fetched data.
-
-html:
-
- <table class="table table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Pass</th>
-                        <th>Role</th>
-                        <th>Image</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-</tbody>
-            </table>
+$sql = "SELECT * FROM register";
+$result = $con->query($sql);
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row['regName'] . "</td>";
+        echo "<td>" . $row['regEmail'] . "</td>";
+        echo "<td>........</td>";
+        echo "<td>";
+        if ($row['regRole'] == 1) {
+            echo "Admin";
+        } else {
+            echo "User";
+        }
+        echo "</td>";
+        echo "<td>";
+        foreach (json_decode($row['regImage']) as $image) {
+            echo "<img src='regImages/" . $image . "' style='width: 40px; height: 40px; object-fit: cover;'>";
+        }
+        echo "</td>";
+        echo "<td>";
+        echo "<a class='btn btn-success btn-sm me-1' href='edit.php?id=" . $row['regId'] . "'>Edit</a>";
+        if ($row['regRole'] == 0) {
+            echo "<a class='btn btn-danger btn-sm ms-1' href='delete.php?id=" . $row['regId'] . "'>Delete</a>";
+        }
+        echo "</td>";
+        echo "</tr>";
+    }
+}
+?>
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Pass</th>
+            <th>Role</th>
+            <th>Image</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
