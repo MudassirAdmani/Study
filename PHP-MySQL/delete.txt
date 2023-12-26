@@ -1,28 +1,20 @@
 <?php
 include('./connect.php');
-// get id for admin deletion
+
 if (isset($_GET['id'])) {
-    // store in variable
     $regId = $_GET['id'];
-    // delete from database
     $sql = "delete from register where regId = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("i", $regId);
     $stmt->execute();
-    // return to dashboard
     header('location: dashboard.php');
-}
-// session id for self deletion
-else if (isset($_SESSION['id'])) {
-    // store in variable
+} else if (isset($_SESSION['id'])) {
     $regId = $_SESSION['id'];
-    // delete from database
     $sql = "delete from register where regId = ?";
     $stmt = $con->prepare($sql);
     $stmt->bind_param("i", $regId);
     $stmt->execute();
-    // stop the session
     session_destroy();
-    // return to index
     header('location: index.php');
 }
+?>
