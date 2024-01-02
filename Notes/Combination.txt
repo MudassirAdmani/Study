@@ -1,0 +1,8 @@
+1.
+Colors:
+Primary: #f8f9fa (gray)
+Secondary: #de9549 (orange)
+Accent: #b76282 (purple)
+Fonts:
+Heading: Merienda
+Text: Poppins
