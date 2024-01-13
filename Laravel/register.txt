@@ -1,4 +1,4 @@
-migrations/user:
+migrations/user.php:
 
 $table->string('usertype')->default(0);
 $table->string('phone')->nullable();
@@ -20,3 +20,12 @@ register.blade.php:
     <x-input id="address" class="block mt-1 w-full" type="text" name="address" :value="old('address')" required autocomplete="username" />
 </div>
 
+models/user.php:
+
+'phone',
+'address',
+
+actions/fortify/createnewuser.php:
+
+'phone' => $input['phone'],
+'address' => $input['address'],
