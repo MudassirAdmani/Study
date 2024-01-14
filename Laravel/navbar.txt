@@ -1,0 +1,29 @@
+blade.php:
+
+// add this code for navbar
+
+<x-app-layout>
+</x-app-layout>
+
+app.blade.php:
+
+//remove the classes
+
+<div class="min-h-screen bg-gray-100">
+
+navigation-menu.blade.php:
+
+// remove this code for removing logo and nav title
+
+<!-- Logo -->
+<div class="shrink-0 flex items-center">
+    <a href="{{ route('dashboard') }}">
+        <x-application-mark class="block h-9 w-auto" />
+    </a>
+</div>
+<!-- Navigation Links -->
+<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+    <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
+        {{ __('Dashboard') }}
+    </x-nav-link>
+</div>
