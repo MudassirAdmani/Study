@@ -17,3 +17,13 @@ public function redirect()
         return view('dashboard');
     }
 }
+
+welcome.blade.php:
+
+// replace this code
+
+href="{{ url('/dashboard') }}"
+
+// to this code
+
+href="{{ url('/redirect') }}"
