@@ -1,0 +1,5 @@
+to integrate template in laravel.
+
+add all the assets (css, js, images) folder in public folder in laravel
+
+add the html files in resource view folder and rename it from '.html' to '.blade.php'
