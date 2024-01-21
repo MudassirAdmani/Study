@@ -6,3 +6,12 @@ Accent: #b76282 (purple)
 Fonts:
 Heading: Merienda
 Text: Poppins
+
+2.
+Colors:
+Primary: #089DDF (cyan)
+Secondary: #0682BE (light blue)
+Accent: #b76282 (purple)
+Fonts:
+Heading: Merienda
+Text: Poppins
