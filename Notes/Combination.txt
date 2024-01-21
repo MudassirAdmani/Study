@@ -9,9 +9,9 @@ Text: Poppins
 
 2.
 Colors:
-Primary: #089DDF (cyan)
-Secondary: #0682BE (light blue)
-Accent: #b76282 (purple)
+Primary: #f8f9fa (gray)
+Secondary: #089DDF (cyan)
+Accent: #D375A7 (pink)
 Fonts:
 Heading: Merienda
 Text: Poppins
