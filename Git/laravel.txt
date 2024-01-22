@@ -1,0 +1,20 @@
+to install vendor folder:
+
+composer install
+
+create .env file
+
+now copy .env.example file and paste into .env file
+
+now activate .env using following command:
+
+php artisan key:generate
+
+to install node_module folder:
+
+npm install
+npm run dev
+
+to install database:
+
+php artisan migrate

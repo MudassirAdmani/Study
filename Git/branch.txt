@@ -1,0 +1,3 @@
+to change branch: 
+
+git checkout [branch name]
