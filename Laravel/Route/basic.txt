@@ -1,0 +1,27 @@
+basic:
+Route::get('user/{id}', function ($id) {});
+
+parameter:
+Route::get('user/{id}', function ($id) {});
+
+optional parameter:
+Route::get('user/{name?}', function ($name = null) {});
+
+Regular Expression Constraints:
+Route::get('user/{id}', function ($id) {})->where('id', '[0-9]+');
+
+named routes:
+Route::get('user/profile', 'UserController@showProfile')->name('profile');
+$url = route('profile');
+
+route groups:
+Route::prefix('admin')->middleware('auth')->namespace('Admin')->group(function () {});
+
+route model binding:
+Route::get('user/{user}', function (App\Models\User $user) {});
+
+resourceful route:
+Route::resource('posts', 'PostController');
+
+subdomain routing:
+Route::domain('api.example.com')->group(function () {});
