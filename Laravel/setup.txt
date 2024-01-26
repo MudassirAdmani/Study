@@ -1,0 +1,25 @@
+install laravel:
+
+composer create-project laravel/laravel your-project-name
+cd your-project-name
+
+install jetstream:
+
+composer require laravel/jetstream
+
+install livewire:
+
+php artisan jetstream:install livewire
+
+create database:
+
+php artisan migrate
+
+install dependencies:
+
+npm install
+npm run dev
+
+start server:
+
+php artisan serve
