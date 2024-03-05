@@ -1,0 +1,111 @@
+Controller:
+
+public function index()
+    {
+        $users = User::all();
+        return response()->json([
+            'message' => count($users) . ' Users Found',
+            'data' => $users,
+            'status' => true
+        ]);
+    }
+    public function show($id)
+    {
+        $user = User::find($id);
+        if ($user != null) {
+            return response()->json([
+                'message' => 'User Found',
+                'data' => $user,
+                'status' => true
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'User Not Found',
+                'data' => [],
+                'status' => true
+            ], 200);
+        }
+    }
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Please Fix Errors',
+                'errors' => $validator->errors(),
+                'status' => false
+            ], 200);
+        }
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->save();
+        return response()->json([
+            'message' => 'User Added Successfully',
+            'data' => $user,
+            'status' => true
+        ], 200);
+    }
+    public function update(Request $request, $id)
+    {
+        $user = User::find($id);
+        if ($user == null) {
+            return response()->json([
+                'message' => 'User Not Found',
+                'status' => false
+            ], 200);
+        }
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Please Fix Errors',
+                'errors' => $validator->errors(),
+                'status' => false
+            ], 200);
+        }
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+        return response()->json([
+            'message' => 'User Updated Successfully',
+            'data' => $user,
+            'status' => true
+        ], 200);
+    }
+    public function destroy($id)
+    {
+        $user = User::find($id);
+        if ($user == null) {
+            return response()->json([
+                'message' => 'User Not Found',
+                'status' => false
+            ], 200);
+        }
+        $user->delete();
+        return response()->json([
+            'message' => 'User Deleted Successfully',
+            'status' => true
+        ], 200);
+    }
+
+api.php:
+
+Route::get('/demo', [DemoController::class, 'index']);
+
+Route::get('/user', [UserController::class, 'index']);
+
+Route::get('/user/{user}', [UserController::class, 'show']);
+
+Route::post('/user', [UserController::class, 'store']);
+
+Route::put('/user/{user}', [UserController::class, 'update']);
+
+Route::delete('/user/{user}', [UserController::class, 'destroy']);
