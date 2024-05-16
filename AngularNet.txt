@@ -95,3 +95,18 @@ exports: [
   ],
 create a shared module and import export material module
 import shared module in app.component.ts
+create a header componet in shared module: ng g c shared/components/pageHeader
+export pageheader component in shared module
+install bootstrap : npm install bootstrap --save
+give path of style and script in angular.json
+create a footer componet in shared module: ng g c shared/components/pageFooter
+export pagefooter component in shared module
+create a sidenav componet in shared module: ng g c shared/components/pageSideNav
+export pagesidenav component in shared module
+import routermodule in sharedmodule
+create a pagenotfound componet in shared module: ng g c shared/components/pageNotFound
+export pagenotfound component in shared module
+declare not found for invalid route
+create a auth module : ng g m auth
+create a register component in auth module : ng g c auth/Register --no-standalone
+create a login component in auth module : ng g c auth/Login --no-standalone
